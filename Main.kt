@@ -1,4 +1,4 @@
-import com.parking.main.models.Airport
+import com.parking.main.models.locations.Airport
 import com.parking.main.models.Vehicle
 import com.parking.main.models.VehicleType
 

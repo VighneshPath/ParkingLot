@@ -69,7 +69,7 @@ abstract class Location {
         return true
     }
 
-    fun getAndUnreserveSpotFor(vehicle: Vehicle): Boolean{
+    private fun getAndUnreserveSpotFor(vehicle: Vehicle): Boolean{
         if(unreserveSpot(vehicle.getTicket().getSpotNumber())){
             currentVehicleTypeSpots[vehicle.getType()] = currentVehicleTypeSpots[vehicle.getType()]!! - 1
             return true

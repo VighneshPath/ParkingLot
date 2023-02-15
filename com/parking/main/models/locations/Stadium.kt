@@ -1,5 +1,6 @@
-package com.parking.main.models
+package com.parking.main.models.locations
 
+import com.parking.main.models.*
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -12,7 +13,6 @@ object StadiumFeeModel {
 }
 
 class Stadium(override var vehicleSpotsLimit: Map<VehicleType, Long>) : Location() {
-    private val stadiumFeeModel: StadiumFeeModel = StadiumFeeModel
     private val flatFare: FlatFare = FlatFare()
     private val timeFare: TimeFare = TimeFare()
 
@@ -34,24 +34,36 @@ class Stadium(override var vehicleSpotsLimit: Map<VehicleType, Long>) : Location
         val duration = Duration.between(vehicle.getTicketStartTime(), LocalDateTime.now()).toHours()
         val finalFare = when (vehicle.getType()) {
             VehicleType.TWO_WHEELER -> {
-                flatFare.compute(duration, StadiumFeeModel.twoWheelerFeeModel) + timeFare.compute(
+                val intervals = StadiumFeeModel.twoWheelerFeeModel.getIntervals()
+                val rates = StadiumFeeModel.twoWheelerFeeModel.getRates()
+                val fareReturned = flatFare.compute(duration, intervals, rates)
+                fareReturned.finalFare + timeFare.compute(
                     duration,
-                    StadiumFeeModel.twoWheelerFeeModel
-                )
+                    intervals.slice(fareReturned.lastIndex until intervals.size),
+                    rates.slice(fareReturned.lastIndex until intervals.size)
+                    ).finalFare
             }
 
             VehicleType.FOUR_WHEELER -> {
-                flatFare.compute(duration, StadiumFeeModel.fourWheelerFeeModel) + timeFare.compute(
+                val intervals = StadiumFeeModel.fourWheelerFeeModel.getIntervals()
+                val rates = StadiumFeeModel.fourWheelerFeeModel.getRates()
+                val fareReturned = flatFare.compute(duration, intervals, rates)
+                fareReturned.finalFare + timeFare.compute(
                     duration,
-                    StadiumFeeModel.twoWheelerFeeModel
-                )
+                    intervals.slice(fareReturned.lastIndex until intervals.size),
+                    rates.slice(fareReturned.lastIndex until intervals.size)
+                ).finalFare
             }
 
             VehicleType.HEAVY_VEHICLE -> {
-                flatFare.compute(duration, StadiumFeeModel.heavyVehicleFeeModel) + timeFare.compute(
+                val intervals = StadiumFeeModel.fourWheelerFeeModel.getIntervals()
+                val rates = StadiumFeeModel.fourWheelerFeeModel.getRates()
+                val fareReturned = flatFare.compute(duration, intervals, rates)
+                fareReturned.finalFare + timeFare.compute(
                     duration,
-                    StadiumFeeModel.twoWheelerFeeModel
-                )
+                    intervals.slice(fareReturned.lastIndex until intervals.size),
+                    rates.slice(fareReturned.lastIndex until intervals.size)
+                ).finalFare
             }
         }
 
