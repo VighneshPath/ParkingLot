@@ -1,6 +1,6 @@
-import models.Airport
-import models.Vehicle
-import models.VehicleType
+import com.parking.main.models.Airport
+import com.parking.main.models.Vehicle
+import com.parking.main.models.VehicleType
 
 fun main(){
     // Input - two-wheeler -> 2 spots
