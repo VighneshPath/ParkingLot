@@ -1,38 +1,45 @@
 package com.parking.main.models
 
 abstract class Fare {
-    abstract fun compute(duration: Long, feeModel: FeeModel): Long
+    abstract fun compute(duration: Long, intervals: List<Interval>, rates: List<Long>): RateReturned
 }
 
+data class RateReturned(val finalFare: Long, val lastIndex: Int)
 class FlatFare : Fare() {
-    override fun compute(duration: Long, feeModel: FeeModel): Long {
-        if (duration <= 0) return 0
+    override fun compute(duration: Long, intervals: List<Interval>, rates: List<Long>): RateReturned {
+        if (duration <= 0) return RateReturned(0,0)
         var finalFare = 0L
-        feeModel.getIntervals().forEachIndexed { index, interval ->
+        var index = 0
+        for(anInterval in intervals.indices){
+            index = anInterval
+            val interval = intervals[anInterval]
             if (interval.end != -1L && duration < interval.end) {
-                finalFare = feeModel.getRates()[index]
+                finalFare = rates[anInterval]
             } else if (interval.end == -1L) {
-                finalFare = feeModel.getRates()[index]
-                return@forEachIndexed
+                finalFare = rates[anInterval]
+                break
             }
         }
-        return finalFare
+        return RateReturned(finalFare, index)
     }
 }
 
 
 class TimeFare : Fare() {
-    override fun compute(duration: Long, feeModel: FeeModel): Long {
-        if (duration <= 0) return 0
+    override fun compute(duration: Long, intervals: List<Interval>, rates: List<Long>): RateReturned {
+        if (duration <= 0) return RateReturned(0,0)
         var finalFare = 0L
-        feeModel.getIntervals().forEachIndexed { index, interval ->
+        var index = 0
+        for(anInterval in intervals.indices){
+            index = anInterval
+            val interval = intervals[anInterval]
             if (interval.end != -1L && duration < interval.end) {
-                finalFare += feeModel.getRates()[index]
+                finalFare += rates[anInterval]
             } else if (interval.end == -1L) {
-                finalFare += feeModel.getRates()[index]
-                return@forEachIndexed
+                finalFare += rates[anInterval]
+                break
             }
         }
-        return finalFare
+        return RateReturned(finalFare, index)
     }
 }

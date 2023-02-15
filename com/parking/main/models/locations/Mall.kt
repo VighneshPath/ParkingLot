@@ -1,5 +1,6 @@
-package com.parking.main.models
+package com.parking.main.models.locations
 
+import com.parking.main.models.*
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -10,7 +11,6 @@ object MallFeeModel {
 }
 
 class Mall(override var vehicleSpotsLimit: Map<VehicleType, Long>) : Location() {
-    private val mallFeeModel: MallFeeModel = MallFeeModel
     private val flatFare: FlatFare = FlatFare()
 
     init {
@@ -30,15 +30,24 @@ class Mall(override var vehicleSpotsLimit: Map<VehicleType, Long>) : Location() 
         val duration = Duration.between(vehicle.getTicketStartTime(), LocalDateTime.now()).toHours()
         val finalFare = when (vehicle.getType()) {
             VehicleType.TWO_WHEELER -> {
-                flatFare.compute(duration, MallFeeModel.twoWheelerFeeModel)
+                val intervals = MallFeeModel.twoWheelerFeeModel.getIntervals()
+                val rates = MallFeeModel.twoWheelerFeeModel.getRates()
+
+                flatFare.compute(duration, intervals, rates).finalFare
             }
 
             VehicleType.FOUR_WHEELER -> {
-                flatFare.compute(duration, MallFeeModel.fourWheelerFeeModel)
+                val intervals = MallFeeModel.fourWheelerFeeModel.getIntervals()
+                val rates = MallFeeModel.fourWheelerFeeModel.getRates()
+
+                flatFare.compute(duration, intervals, rates).finalFare
             }
 
             VehicleType.HEAVY_VEHICLE -> {
-                flatFare.compute(duration, MallFeeModel.heavyVehicleFeeModel)
+                val intervals = MallFeeModel.heavyVehicleFeeModel.getIntervals()
+                val rates = MallFeeModel.heavyVehicleFeeModel.getRates()
+
+                flatFare.compute(duration, intervals, rates).finalFare
             }
         }
         return finalFare
