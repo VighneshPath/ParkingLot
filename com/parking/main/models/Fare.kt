@@ -34,9 +34,9 @@ class TimeFare : Fare() {
             index = anInterval
             val interval = intervals[anInterval]
             if (interval.end != -1L && duration < interval.end) {
-                finalFare += rates[anInterval]
+                finalFare += rates[anInterval]*(interval.end-interval.start)
             } else if (interval.end == -1L) {
-                finalFare += rates[anInterval]
+                finalFare += rates[anInterval]*(duration-interval.start)
                 break
             }
         }
