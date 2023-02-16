@@ -42,6 +42,12 @@ class Airport(override var vehicleSpotsLimit: Map<VehicleType, Long>) : Location
         }
         val intervals = feeModel.getIntervalsForModel()
         val rates = feeModel.getRatesForModel()
+        if(duration >= 24){
+
+        }
+        intervals.forEachIndexed{index, interval ->
+
+        }
         val fareReturned = flatFare.compute(duration, intervals, rates)
 
         return fareReturned.finalFare + (timeFare.compute(
