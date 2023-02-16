@@ -1,14 +1,11 @@
 package com.parking.main.models.locations
 
 import com.parking.main.models.*
+import com.parking.main.models.feemodels.MallFourWheelerFee
+import com.parking.main.models.feemodels.MallHeavyVehicleFee
+import com.parking.main.models.feemodels.MallTwoWheelerFee
 import java.time.Duration
 import java.time.LocalDateTime
-
-object MallFeeModel {
-    var twoWheelerFeeModel: FeeModel = FeeModel(listOf(Interval(-1, -1)), listOf(10))
-    var fourWheelerFeeModel: FeeModel = FeeModel(listOf(Interval(-1, -1)), listOf(20))
-    var heavyVehicleFeeModel: FeeModel = FeeModel(listOf(Interval(-1, -1)), listOf(10))
-}
 
 class Mall(override var vehicleSpotsLimit: Map<VehicleType, Long>) : Location() {
     private val flatFare: FlatFare = FlatFare()
@@ -28,28 +25,22 @@ class Mall(override var vehicleSpotsLimit: Map<VehicleType, Long>) : Location() 
 
     override fun getFeeToPay(vehicle: Vehicle): Long {
         val duration = Duration.between(vehicle.getTicketStartTime(), LocalDateTime.now()).toHours()
-        val finalFare = when (vehicle.getType()) {
+        val feeModel: FeeModel = when (vehicle.getType()) {
             VehicleType.TWO_WHEELER -> {
-                val intervals = MallFeeModel.twoWheelerFeeModel.getIntervals()
-                val rates = MallFeeModel.twoWheelerFeeModel.getRates()
-
-                flatFare.compute(duration, intervals, rates).finalFare
+                MallTwoWheelerFee()
             }
 
             VehicleType.FOUR_WHEELER -> {
-                val intervals = MallFeeModel.fourWheelerFeeModel.getIntervals()
-                val rates = MallFeeModel.fourWheelerFeeModel.getRates()
-
-                flatFare.compute(duration, intervals, rates).finalFare
+                MallFourWheelerFee()
             }
 
             VehicleType.HEAVY_VEHICLE -> {
-                val intervals = MallFeeModel.heavyVehicleFeeModel.getIntervals()
-                val rates = MallFeeModel.heavyVehicleFeeModel.getRates()
-
-                flatFare.compute(duration, intervals, rates).finalFare
+                MallHeavyVehicleFee()
             }
         }
-        return finalFare
+        val intervals = feeModel.getIntervalsForModel()
+        val rates = feeModel.getRatesForModel()
+
+        return flatFare.compute(duration, intervals, rates).finalFare
     }
 }

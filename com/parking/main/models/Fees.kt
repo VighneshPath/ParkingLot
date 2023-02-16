@@ -2,12 +2,15 @@ package com.parking.main.models
 
 data class Interval(val start: Long, val end: Long)
 
-class FeeModel(private val intervals: List<Interval>, private val rates: List<Long>) {
-    fun getIntervals(): List<Interval> {
+abstract class FeeModel() {
+    abstract var intervals: List<Interval>
+    abstract var rates: List<Long>
+
+    fun getIntervalsForModel(): List<Interval>{
         return intervals
     }
 
-    fun getRates(): List<Long> {
+    fun getRatesForModel(): List<Long> {
         return rates
     }
 }
